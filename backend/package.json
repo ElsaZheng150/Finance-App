@@ -1,11 +1,15 @@
 {
-  "name": "campus-cash-backend",
+  "name": "Shame Finance App",
   "version": "1.0.0",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "test": "jest --runInBand --forceExit"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testTimeout": 120000
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
