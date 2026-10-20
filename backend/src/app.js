@@ -7,7 +7,10 @@ const auth = require("./middleware/auth");
 
 const app = express();
 app.set("trust proxy", 1);
-app.use(helmet({ contentSecurityPolicy: false }));
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
+}));
 app.use(cors());
 app.use(express.json());
 
