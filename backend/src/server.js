@@ -11,5 +11,5 @@ const PORT = process.env.PORT || 5000;
 
 mongoose
   .connect(process.env.MONGODB_URI)
-  .then(() => app.listen(PORT, () => console.log(`Campus Cash API on :${PORT}`)))
+  .then(() => app.listen(PORT, () => console.log(`Shame Finance App API on :${PORT}`)))
   .catch((err) => { console.error(err); process.exit(1); });

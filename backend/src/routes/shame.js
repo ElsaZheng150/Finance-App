@@ -33,7 +33,7 @@ router.post("/", async (req, res) => {
         subject,
         text:
           `Hi ${c.name},\n\n` +
-          `${user.name} added you as a spending accountability buddy on Campus Cash, ` +
+          `${user.name} added you as a spending accountability buddy on the Shame Finance App, ` +
           `and just hit the Shame Button.\n\n` +
           `About to buy: ${item}\nPrice: ${money}\n` +
           (note ? `Their excuse: ${note}\n` : "") +
