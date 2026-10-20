@@ -1,4 +1,4 @@
-name: CI/CD
+name: CI
 
 on:
   push:
@@ -24,21 +24,3 @@ jobs:
         run: |
           npm install
           npm run build
-
-  deploy:
-    needs: test-and-build
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            set -e
-            cd ~/campus-cash
-            git pull origin main
-            (cd frontend && npm install && npm run build)
-            (cd backend && npm install --omit=dev)
-            pm2 restart campus-cash || pm2 start backend/src/server.js --name campus-cash
