@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { api } from "../api";
+import GoogleButton from "./GoogleButton.jsx";
 
 export default function Auth({ onAuth }) {
   const [mode, setMode] = useState("login");
@@ -18,11 +19,21 @@ export default function Auth({ onAuth }) {
     }
   };
 
+  const google = async (credential) => {
+    setError("");
+    try {
+      const data = await api("/auth/google", { method: "POST", body: { credential } });
+      onAuth(data.token, data.user);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   return (
     <div className="authwrap">
       <div className="authintro">
-        <h1>Shame Finance</h1>
-        <p>Track spending, income and student loans. And when you're about to drop $180 on blind boxes, hit the shame button and let your friends talk you out of it.</p>
+        <h1>Shame Finance App</h1>
+        <p>Track spending, income and student loans. And when you're about to waste $180 on sneakers, hit the shame button and let your friends talk you out of it.</p>
       </div>
       <form className="panel authform" onSubmit={submit}>
         <h2>{mode === "login" ? "Log in" : "Create your account"}</h2>
@@ -33,6 +44,10 @@ export default function Auth({ onAuth }) {
         <label>Password<input type="password" minLength={8} value={form.password} onChange={set("password")} required /></label>
         {error && <p className="error">{error}</p>}
         <button className="btn primary">{mode === "login" ? "Log in" : "Sign up"}</button>
+
+        <p className="muted" style={{ textAlign: "center", margin: 0 }}>or</p>
+        <GoogleButton onCredential={google} />
+
         <button type="button" className="link" onClick={() => setMode(mode === "login" ? "register" : "login")}>
           {mode === "login" ? "New here? Create an account" : "Have an account? Log in"}
         </button>

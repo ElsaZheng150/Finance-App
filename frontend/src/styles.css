@@ -84,6 +84,7 @@ label { display: flex; flex-direction: column; gap: .25rem; font-weight: 500; }
 .authintro h1 { font-size: 3.4rem; }
 .authintro p { font-size: 1.2rem; max-width: 34ch; }
 .authform { display: flex; flex-direction: column; gap: .8rem; }
+.googlebtn { display: flex; justify-content: center; }
 
 @media (max-width: 760px) {
   .shell { grid-template-columns: 1fr; }

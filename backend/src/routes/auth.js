@@ -1,3 +1,5 @@
+const { OAuth2Client } = require("google-auth-library");
+const googleClient = new OAuth2Client();
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -23,8 +25,47 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   const user = email && (await User.findOne({ email: email.toLowerCase() }));
+  if (user && !user.passwordHash) {
+    return res.status(401).json({ error: "This account uses Google sign-in. Use the Google button." });
+  }
   if (!user || !(await bcrypt.compare(password || "", user.passwordHash))) {
     return res.status(401).json({ error: "Wrong email or password." });
+  }
+  res.json({ token: sign(user), user: publicUser(user) });
+});
+
+router.post("/google", async (req, res) => {
+  const { credential } = req.body;
+  if (!credential || !process.env.GOOGLE_CLIENT_ID) {
+    return res.status(400).json({ error: "Google sign-in isn't set up." });
+  }
+
+  let payload;
+  try {
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    payload = ticket.getPayload();
+  } catch {
+    return res.status(401).json({ error: "Google sign-in failed. Try again." });
+  }
+  if (!payload.email || !payload.email_verified) {
+    return res.status(401).json({ error: "Your Google email isn't verified." });
+  }
+
+  let user = await User.findOne({
+    $or: [{ googleId: payload.sub }, { email: payload.email.toLowerCase() }],
+  });
+  if (!user) {
+    user = await User.create({
+      name: payload.name || payload.email.split("@")[0],
+      email: payload.email,
+      googleId: payload.sub,
+    });
+  } else if (!user.googleId) {
+    user.googleId = payload.sub; // link Google to an existing email/password account
+    await user.save();
   }
   res.json({ token: sign(user), user: publicUser(user) });
 });
